@@ -1,10 +1,16 @@
 using LinearAlgebra
 
-# constructs the Liouville superoperator from
-# the Hamiltonian and
-# the set of Lindblad operators rescaled by the root of the rates
+# The Liouvillian is used repeatedly in subsequent examples,
+# so we have reproduced this function in src/liouvillian.jl
 
-# ∑[γ (L* L - 1/2 (1 ⊗ L†L + (L†L)ᵀ ⊗ 1))]
+"""
+    liouvillian(H, Ls; ħ=1)
+
+Constructs the Liouville superoperator from the Hamiltonian `H` and
+the set of Lindblad operators `Ls` rescaled by the root of the rates.
+
+∑[γ (L* L - 1/2 (1 ⊗ L†L + (L†L)ᵀ ⊗ 1))]
+"""
 function liouvillian(H, Ls, ħ = 1)
     d = size(H, 1)
     superH = -im/ħ * (kron(I(d), H) - kron(transpose(H), I(d)))
@@ -14,14 +20,9 @@ function liouvillian(H, Ls, ħ = 1)
     else
         superL = sum(L -> kron(conj(L), L) - 0.5 * (kron(I(d), L'*L) + kron(transpose(L'*L), I(d))), Ls)
     end
-    
     superH + superL
 end
 
 H = [0 1 ; 1 1] # some Hamiltonian
 Ls = [[0 1 ; 0 0]] # array with a single Lindblad operator with embedded rate
 superop = liouvillian(H, Ls) # Liouville superoperator
-
-# The Liouvillian is used repeatedly
-# in the following examples, so we have
-# reproduced this function in src/liouvillian.jl

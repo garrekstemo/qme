@@ -1,6 +1,9 @@
 """
-    Liouvillian
-    
+    liouvillian(H, Ls; ħ=1)
+
+Constructs the Liouville superoperator from the Hamiltonian `H` and
+the set of Lindblad operators `Ls` rescaled by the root of the rates.
+
 ∑[γ (L* L - 1/2 (1 ⊗ L†L + (L†L)ᵀ ⊗ 1))]
 """
 function liouvillian(H, Ls, ħ = 1)
@@ -12,6 +15,5 @@ function liouvillian(H, Ls, ħ = 1)
     else
         superL = sum(L -> kron(conj(L), L) - 0.5 * (kron(I(d), L'*L) + kron(transpose(L'*L), I(d))), Ls)
     end
-    
     superH + superL
 end
