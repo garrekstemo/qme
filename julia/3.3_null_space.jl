@@ -1,12 +1,9 @@
-using LinearAlgebra
-
-# Include file containing the Liouvillian function
-include("src/liouvillian.jl")
+include("src/liouvillian.jl")  # Include file containing the Liouvillian function
 
 # two-level Hamiltonian from delta and omega parameters
 H_tls(ω, Δ) = [0 ω; ω Δ]
 
-# Lindblad operators for spontaneous relaxation and dephsing
+# Lindblad operators for spontaneous relaxation and dephasing
 L_relax(γ) = γ * [0 1; 0 0]
 L_dephase(γ) = γ * [0 0; 0 1]
 
@@ -18,10 +15,9 @@ L_dephase(γ) = γ * [0 0; 0 1]
 
 superop = liouvillian(H_tls(ω, Δ), [L_relax(γ_relax), L_dephase(γ_dephase)])
 null = nullspace(superop)
-println("(i) The steady-state space is a linear subpace of dimension = +$(string(length(transpose(null))-1))")
+println("(i) The steady-state space is a linear subpace of dimension = $(size(null, 2) - 1)")  # should be 0
 ρ_ss = reshape(null, 2, 2)
 ρ_ss /= tr(ρ_ss)
-
 
 # ------- (ii) dephasing with no driving --------
 ω = 0
@@ -31,4 +27,4 @@ println("(i) The steady-state space is a linear subpace of dimension = +$(string
 
 superop = liouvillian(H_tls(ω, Δ), [L_relax(γ_relax), L_dephase(γ_dephase)])
 null = nullspace(superop)
-println("(ii) The steady-state space is a linear subpace of dimension = +$(string(length(transpose(null))-1))")
+println("(ii) The steady-state space is a linear subpace of dimension = $(size(null, 2) - 1)")  # should be 1
