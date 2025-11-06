@@ -10,7 +10,7 @@ superop = liouvillian(H, c_ops)
 
 function propagate(ρ0, superop, t)
     d = size(ρ0, 1) # dimension of the system
-    propagator = exp(superop * t)  # matrix exponentiation is built into the default exp
+    propagator = exp(superop * t)  # matrix exponentiation is built into the default exp() function
     ρ_vec = reshape(ρ0, d^2)
     ρ_vec_t = propagator * ρ_vec
     reshape(ρ_vec_t, d, d)  # return ρ(t)
