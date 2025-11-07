@@ -10,7 +10,7 @@ the set of Lindblad operators `Ls` rescaled by the root of the rates.
 """
 function liouvillian(H, Ls, ħ = 1)
     d = size(H, 1)
-    superH = -im/ħ * (kron(I(d), H) - kron(H', I(d)))
+    superH = -im/ħ * (kron(I(d), H) - kron(transpose(H), I(d)))
 
     if isempty(Ls) # if there are no Lindblad operators (necessary for script 3.7)
         superL = zeros(ComplexF64, d^2, d^2)
