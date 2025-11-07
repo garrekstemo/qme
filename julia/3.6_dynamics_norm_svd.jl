@@ -15,7 +15,7 @@ superop = liouvillian(H_s, [L])
 
 # Right eigenvectors: superop * v = λ * v
 λ, right = eigen(superop)
-left = pinv(right')
+left = inv(right')  # inverse of the conjugate transpose of the right eigenvector
 
 # Initial state in vectorized form
 ρ0_vec = [0, 0, 0, 1]
@@ -30,7 +30,7 @@ for k in 1:d^2
 end
 
 # Population dynamics
-fig = Figure(size = (800, 400))
+fig = Figure()
 ax = Axis(fig[1, 1], xlabel = "time (tΩ)", ylabel = "Tr[ρ(t)ρ₀]")
-lines!(ax, ts * Ω, real(ρt_vec[4, :]), label = "k-")
+lines!(ts * Ω, real(ρt_vec[4, :]), label = "k-")
 fig
