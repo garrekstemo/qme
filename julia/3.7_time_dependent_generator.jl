@@ -23,15 +23,15 @@ v(t) = cos(ω * t)  # time-dependent coupling
 function dynamics(time_final, n_samples)
     times = range(0, stop=time_final, length=n_samples) # time steps
     dt = times[2] - times[1]  # finite difference
-    ρt_vec = reshape(ρ0, d^2)  # initial state vectorized
+    ρt_vec = vec(ρ0)  # initial state vectorized
     
     populations = []
     # propagation
     for t in times
-        ρt = reshape(ρt_vec, d, d)  # reshape to density matrix
-        push!(populations, real(tr(ρt * ρ0))) # append to populations
+        ρt = reshape(ρt_vec, d, d)  # reshape into density operator
+        push!(populations, real(tr(ρt * ρ0)))  # append to populations
         superop = L0 + v(t) * L1  # update superoperator
-        P = exp(superop * dt) # propagator (exp() can operate on matrices in Julia)
+        P = exp(superop * dt)  # propagator (exp() can operate on matrices in Julia)
         ρt_vec = P * ρt_vec  # propagate state for dt
     end
     return times, populations
@@ -50,14 +50,14 @@ fig = Figure()
 ax1 = Axis(fig[1, 1], xlabel="t", ylabel="Tr[ρ(t)ρ₀]")
 
 # The splat operation "..." unpacks the tuple into separate arguments
-lines!(data_hi..., label = "sample = $(length(data_hi[1]))")
-scatterlines!(data_mid..., color = (:orangered, 0.7), linestyle = :dash, label = "sample = $(length(data_mid[1]))")
-scatterlines!(data_low..., color = (:green, 0.5), linestyle = :dash, label = "sample = $(length(data_low[1]))")
+lines!(data_hi..., label = "δt = $(t_final / length(data_hi[1]))")
+scatterlines!(data_mid..., color = (:orangered, 0.7), linestyle = :dash, label = "δt = $(t_final / length(data_mid[1]))")
+scatterlines!(data_low..., color = (:forestgreen, 0.8), linestyle = :dash, label = "δt = $(t_final / length(data_low[1]))")
 
 ax2 = Axis(fig[2, 1], xlabel="t", ylabel="v(t)")
 lines!(times, v.(times))
 
-rowsize!(fig.layout, 2, 100) # fix row 2 height to 150
+rowsize!(fig.layout, 2, 100) # fix height of row 2 to 100
 axislegend(ax1)
 hidexdecorations!(ax1, grid=false)
 fig
