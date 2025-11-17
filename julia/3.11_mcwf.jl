@@ -42,4 +42,5 @@ end
 mean ./= num_samples
 
 fig, ax, l = lines(times, real(mean), label = "MCWF")
+axislegend(ax)
 fig
