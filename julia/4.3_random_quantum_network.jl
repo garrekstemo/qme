@@ -5,11 +5,11 @@ using Random
 include("src/bloch_redfield_tensor.jl")
 
 # constants and units
-fs = 1 / (2.4189e-2) # femtosecond in Hartree AU
-eV = 1 / (fs * 0.6582) # electronvolt in Hartree AU
+fs = 1 / (2.4189e-2)  # femtosecond in Hartree AU
+eV = 1 / (fs * 0.6582)  # electronvolt in Hartree AU
 
-Random.seed!(0) # fix random seed
-N = 10 # number of sites
+Random.seed!(0)  # fix random seed
+N = 10  # number of sites
 
 # disorder parameters
 σ_E = 100e-3 * eV
@@ -18,7 +18,7 @@ N = 10 # number of sites
 # random energies
 Es = σ_E * randn(N)
 
-H = Matrix(Diagonal(Es)) # Hamiltonian
+H = Matrix(Diagonal(Es))  # Hamiltonian
 
 # random couplings
 pairs = [(j, k) for k in 2:N for j in 1:k-1]
@@ -28,7 +28,7 @@ for idx in sel
     j, k = pairs[idx]
     v = σ_V * randn()
     H[j, k] = v
-    H[k, j] = conj(v) # Hermiticity
+    H[k, j] = conj(v)  # Hermiticity
 end
 
 vals, kets = eigen(Hermitian(H))
