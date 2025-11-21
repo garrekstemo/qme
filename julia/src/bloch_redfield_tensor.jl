@@ -3,7 +3,7 @@ using LinearAlgebra
 """
     Kronecker delta
 """
-δ(x, y) = x == y ? 1 : 0
+δ(x, y) = ==(x, y)
 
 """
     Noise power spectrum
@@ -23,24 +23,24 @@ end
 """
 function BR_tensor(H, a_ops, secular=true, secular_cutoff=0.01)
     dim = size(H, 1) # system dimension
-    λs, ekets = eigen(H) # These are already sorted, see documentation for details
+    λs, ekets = eigen(H) # These are already sorted
     a_ops_S = [[ekets' * A * ekets, nps] for (A, nps) in a_ops] # transform a_ops to Hamiltonian basis
     indices = [(a, b) for a in 1:dim for b in 1:dim]
-    
+
     #Bohr frequencies
     BohrF = sort([λs[a] - λs[b] for a in 1:dim for b in 1:dim]) # sorted list of Bohr frequencies
+
+    # Calculate gmax once using all nps functions from a_ops
+    gmax = maximum([maximum([nps(f) for f in BohrF]) for (a_op, nps) in a_ops_S])
 
     R = zeros(ComplexF64, dim^2, dim^2)
     for (j, (a, b)) in enumerate(indices)
         for (k, (c, d)) in enumerate(indices)
-            R[j, k] += -im * (λs[a] - λs[b]) * (a == c && b == d)
+            R[j, k] += -im * (λs[a] - λs[b]) * (δ(a, c) && δ(b, d))
             for (a_op, nps) in a_ops_S
-                gmax = maximum([NPS(f) for f in BohrF]) # largest rate for secular approximation
                 A = a_op # coupling operator
-                # secular approximation test
-                if secular == true && abs(λs[a] - λs[b] - λs[c] + λs[d]) > gmax * secular_cutoff
-                    continue
-                else
+                # secular approximation test: skip if energy difference too large
+                if !secular || abs(λs[a] - λs[b] - λs[c] + λs[d]) <= gmax * secular_cutoff
                     # non-unitary part
                     R[j, k] += -0.5 * (
                                 δ(b, d) * sum(A[a, n] * A[n, c] * nps(λs[c] - λs[n]) for n in 1:dim) -
