@@ -1,3 +1,7 @@
+# This example simulates exciton dynamics in a random quantum network
+# and compares the results of the Bloch-Redfield master equation
+# with the Pauli master equation.
+
 using LinearAlgebra
 using GLMakie
 using StatsBase
