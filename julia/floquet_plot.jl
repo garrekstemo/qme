@@ -1,7 +1,6 @@
 using GLMakie
 include("5.1_floquet_rates.jl")
 
-
 σz = [1 0; 0 -1]
 σx = [0 1; 1 0]
 
@@ -27,24 +26,26 @@ for (i, Δ) in enumerate(Δs)
 end
 
 
-fig = Figure()
+fig = Figure(size = (800, 550))
 ax1 = Axis(fig[1, 1],
     ylabel = "Energy (λ)",
     title = "Floquet Spectrum",
-    xticks = LinearTicks(5))
-lines!(Δs / ω, spectrum[2, :], label = "Excited State")
-lines!(Δs / ω, spectrum[1, :], label = "Ground State")
+    xticks = LinearTicks(8))
+lines!(Δs / ω, spectrum[2, :], label = L"λ_e")
+lines!(Δs / ω, spectrum[1, :], label = L"λ_g")
 
 ax2 = Axis(fig[2, 1],
     xlabel = "Detuning Δ/ω",
     ylabel = "Absorption Probability",
-    xticks = LinearTicks(5))
+    xticks = LinearTicks(8),
+)
 lines!(-Δs / ω, abs_av[:, 1], label = "V = $(Vs[1])")
-lines!(-Δs / ω, abs_av[:, 2], label = "V = $(Vs[2])")
-lines!(-Δs / ω, abs_av[:, 3], label = "V = $(Vs[3])")
+lines!(-Δs / ω, abs_av[:, 2], linestyle = :dash, label = "V = $(Vs[2])")
+lines!(-Δs / ω, abs_av[:, 3], linestyle = (:dashdot, :dense), label = "V = $(Vs[3])")
 
 xlims!(ax1, -4, 4)
 xlims!(ax2, -4, 4)
 axislegend(ax1, position = :rc)
 axislegend(ax2, position = :lt)
+
 fig
