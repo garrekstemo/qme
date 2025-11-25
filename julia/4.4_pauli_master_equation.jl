@@ -7,6 +7,7 @@ using GLMakie
 using StatsBase
 using Random
 include("src/bloch_redfield_tensor.jl")
+include("src/pauli.jl")
 
 # constants and units
 const fs = 1 / (2.4189e-2)  # femtosecond in Hartree AU
@@ -30,20 +31,6 @@ function simulate_dynamics(dts, A, ρ, X, num_steps=1000)
         end
     end
     return times, positions
-end
-
-function construct_W(A_operators, vals, kets, N)
-    W = zeros(N, N)
-    for (A_op, nps) in A_operators
-        A = kets' * A_op * kets
-        for a in 1:N
-            W[a, a] -= sum([A[a, b] * A[b, a] * nps(vals[a] - vals[b]) for b in 1:N])
-            for b in 1:N
-                W[a, b] += A[b, a] * A[a, b] * nps(vals[b] - vals[a])
-            end
-        end
-    end
-    return W
 end
 
 N = 10  # number of sites
