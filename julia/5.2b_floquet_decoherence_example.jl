@@ -1,6 +1,7 @@
 using LinearAlgebra
-include("src/functions.jl")
-include("src/liouvillian.jl")
+using GLMakie
+
+# the following also includes helper_functions.jl and liouvillian.jl
 include("floquet_decoherence.jl")
 
 # H = H0 + H_int * cos(ω * t)  Total Hamiltonian
@@ -38,7 +39,8 @@ for (i, Γz) in enumerate(Γzs)
 
         H_int = L / 2  # interaction Hamiltonian
         system_1 = I(length(H_0))
-        P0 = liouvillian(H_int, [])
+        P0 = liouvillian(H_int, Ls)
+        P_int = liouvillian(H_int, [])
 
         times = [10 / Γz]
 
@@ -50,13 +52,22 @@ end
 
 fig = Figure()
 ax1 = Axis(fig[1, 1],
-    ylabel = "Energy")
-lines!(Δs / ω, spectrum[1, :])
-lines!(Δs / ω, spectrum[2, :])
+    ylabel = "Energy (λ)",
+    xticks = LinearTicks(8),
+)
+lines!(Δs / ω, spectrum[1, :], label = "Excited State")
+lines!(Δs / ω, spectrum[2, :], label = "Ground State")
 
-ax2 = Axis(fig[2, 1])
+ax2 = Axis(fig[2, 1],
+    xlabel = "Detuning Δ / ω",
+    ylabel = "Absorption probability",
+    xticks = LinearTicks(8),
+)
 for i in eachindex(Γzs)
     lines!(Δs / ω, -absorb_av[:, i], label = "Γz = $(Γzs[i])")
 end
+
+axislegend(ax1, position = :rc)
+axislegend(ax2, position = :lt)
 
 fig

@@ -1,5 +1,6 @@
-using LinearAlgebra
 include("src/liouvillian.jl")
+include("src/helper_functions.jl")
+
 # Function to obtain the Floquet propagator U(t) in terms of Floquet blocks
 # U -> U(t) = ( ..., U[2], U[1], U[0], U[-1], U[-2], ...)
 # for a harmonically driven system
@@ -9,25 +10,28 @@ include("src/liouvillian.jl")
 # nphotons: number of photons driving the interaction
 # P0:       time-independent part of the Liouville superoperator
 # Pint:     superoperator of the interaction
-# average:  if average is True, average over all possible phases of driving field.
+# average:  if average is true, average over all possible phases of driving field.
 
 function floquet_decoherence(times, ω, n_photons, P0, P_int, average=false)
     if n_photons % 2 == 0
         error("n_photons must be odd")
     end
+
+    P0 = im * P0
+    P_int = im * P_int
+
     d = size(P0, 1)
-    U0 = I(d) # initial generator
+    U0 = I(d)  # initial generator
 
     n_max = floor(Int, n_photons / 2)
     H_ph = ω * kron(Diagonal(-n_max:n_max), I(d))
 
     # system
-    off_diagonals = Tridiagonal(ones(n_photons-1), zeros(n_photons), ones(n_photons-1))
-    Pf = kron(I(n_photons), P0) + H_ph + kron(off_diagonals, P_int)
+    Pf = kron(I(n_photons), P0) + H_ph + kron(offdiagonal_ones(n_photons), P_int)
 
     vals, vecs = eigen(Pf)
 
-    U0_f = kron(onehot(n_photons, n_max+1)', U0)
+    U0_f = kron(onehot(n_photons, n_max + 1)', U0)
     U_t = zeros(ComplexF64, d, d, length(times))
 
     for i in eachindex(times)
