@@ -20,6 +20,9 @@ end
 Create a one-hot encoded vector of length `n` with a 1 at position `k`.
 """
 function onehot(n, k)
+    if n < k
+        throw(ArgumentError("n must be >= k (got n=$n, k=$k)"))
+    end
     v = zeros(Int, n)
     v[k] = 1
     v
