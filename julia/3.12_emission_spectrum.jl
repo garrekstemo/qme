@@ -36,11 +36,31 @@ spectrum = 2 * real(fft(corrs)) * dt
 
 
 fig = Figure(size = (800, 600))
-ax1 = Axis(fig[1, 1], xlabel = "t", ylabel = "Correlation")
-lines!(ax1, times, real(corrs))
-xlims!(ax1, 0, 100)
+ax1 = Axis(fig[1, 1],
+    title = "Correlation Function",
+    xlabel = "t / Ω",
+    ylabel = "C(t)",
+    xticks = LinearTicks(6),
+    yticks = 0:0.1:0.5,
+    )
+lines!(times, real(corrs))
+lines!(times, imag(corrs), linestyle = :dash)
 
-ax2 = Axis(fig[2, 1], xlabel = "ω", ylabel = "Spectrum")
-lines!(ax2, Ω_list, spectrum)
+ax2 = Axis(fig[2, 1], 
+    title = "Emission Spectrum",
+    xlabel = "ω / Ω",
+    ylabel = "E(ω)",
+    )
+scatter!(Ω_list, spectrum, label = "Semigroup")
+
+ggee = "|g⟩ → |g⟩\n|e⟩ → |e⟩"
+ge = "|g⟩ → |e⟩"
+eg = "|e⟩ → |g⟩"
+text!(ggee, position = (0.5, 0.85), align = (:center, :center), space = :relative)
+text!(ge, position = (0.25, 0.3), align = (:center, :center), space = :relative)
+text!(eg, position = (0.75, 0.3), align = (:center, :center), space = :relative)
+
+xlims!(ax1, 0, 100)
 xlims!(ax2, -2, 2)
+ylims!(ax2, -0.2, 18)
 fig
