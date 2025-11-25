@@ -46,4 +46,4 @@ const eV = 1 / (fs * 0.6582)
     # Note: Random values are extremely unlikely to be exactly zero
     n_nonzero = count(x -> abs(x) > 0, H)
     @test n_nonzero == N + 2 * N
-end
+end;

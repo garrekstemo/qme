@@ -1,8 +1,8 @@
 # Comprehensive tests for the Bloch-Redfield tensor implementation
 # These tests verify correctness based on known properties and debugging insights
 
-using LinearAlgebra
 using Test
+using LinearAlgebra
 
 include("../src/bloch_redfield_tensor.jl")
 
@@ -28,7 +28,7 @@ const eV = 1 / (fs * 0.6582)  # electronvolt in Hartree AU
         ω = 1e-12  # Very small frequency
         nps_val = S(ω, ωc, η, β, threshold)
         thermal_limit = 2π * η / β
-        @test nps_val ≈ thermal_limit rtol=1e-6
+        @test nps_val ≈ thermal_limit rtol = 1e-6
     end
 
     @testset "Negative frequency" begin
@@ -190,7 +190,7 @@ end
     # Transform back
     A_back = kets * A_eigen * kets'
 
-    @test A_back ≈ A rtol=1e-10
+    @test A_back ≈ A rtol = 1e-10
 end
 
 @testset "Physical constraints" begin
@@ -329,8 +329,4 @@ end
         # Should be very small dissipation
         @test maximum(abs.(real.(R))) < 1.0
     end
-end
-
-println("\n" * "="^60)
-println("All Bloch-Redfield tensor tests completed!")
-println("="^60)
+end;

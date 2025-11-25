@@ -7,8 +7,6 @@ reference implementation and checks physical properties.
 
 using Test
 using LinearAlgebra
-using Test
-using LinearAlgebra
 using PythonCall
 
 # Import Julia implementation
@@ -21,6 +19,8 @@ python_path = abspath(joinpath(@__DIR__, "../../python"))
 if !(python_path in sys.path)
     sys.path.append(python_path)
 end
+
+const np = pyimport("numpy")
 py_floquet = pyimport("floquet_decoherence")
 py_superop = pyimport("superoperator")
 
@@ -49,9 +49,6 @@ py_superop = pyimport("superoperator")
     # Liouvillians
     P0_jl = liouvillian(H_0, Ls_jl)
     P_int_jl = liouvillian(H_int, [])
-
-    # Import numpy
-    np = pyimport("numpy")
 
     # Convert inputs to numpy arrays for Python
     H_0_py = np.array(H_0)
@@ -144,4 +141,4 @@ py_superop = pyimport("superoperator")
     @testset "Error handling" begin
         @test_throws ErrorException floquet_decoherence(times, ω, 12, P0_jl, P_int_jl, false)
     end
-end
+end;

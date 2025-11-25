@@ -133,4 +133,4 @@ include("../src/floquet_rates.jl")
             @test ψ_m' * ψ_m ≈ 1.0
         end
     end
-end
+end;

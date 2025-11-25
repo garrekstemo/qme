@@ -39,4 +39,4 @@ include("../src/helper_functions.jl")
             @test v == [i == k for i in 1:n]
         end
     end
-end
+end;
