@@ -1,7 +1,7 @@
 using LinearAlgebra
 
 # The onehot(n, k) function is defined in src/functions.jl
-include("src/helper_functions.jl")
+include("helper_functions.jl")
 
 function floquet(H_0, H_int, ω, n_ph, meas_vec)
     dim = size(H_0, 1)  # dimension of atomic system
@@ -12,7 +12,7 @@ function floquet(H_0, H_int, ω, n_ph, meas_vec)
 
     # Construct the interaction Hamiltonian
     H_int = kron(offdiagonal_ones(n_ph), H_int)
-    
+
     H = H_atom + H_int + H_ph  # Put it all together
 
     # spectral decomposition of H0 and H

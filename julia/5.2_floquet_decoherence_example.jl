@@ -1,8 +1,8 @@
 using LinearAlgebra
 using GLMakie
 
-# the following also includes helper_functions.jl and liouvillian.jl
-include("floquet_decoherence.jl")
+# the following includes helper_functions.jl and liouvillian.jl
+include("src/floquet_decoherence.jl")
 
 # H = H0 + H_int * cos(ω * t)  Total Hamiltonian
 # H0 = Δ * σz / 2 + ϵ * σx  Bare Hamiltonian
@@ -14,7 +14,7 @@ meas_vec = [1, 0]
 
 # Example values of the Hamiltonian parameters
 ϵ = 0.2             # energy
-Δs = -6.0:0.02:6.02 # detuning range
+Δs = -6:0.02:6  # detuning range
 ω = 1.5             # driving frequency
 n_ph = 13           # number of photons
 
@@ -30,16 +30,16 @@ for (i, Γz) in enumerate(Γzs)
     Ls = [sqrt(Γz) * L]
 
     for (j, Δ) in enumerate(Δs)
-        H_0 = Δ/2 * L + ϵ * [0 1; 1 0]
+        H_0 = Δ / 2 * L + ϵ * [0 1; 1 0]
         vals, vecs = eigen(H_0)
         spectrum[:, j] = vals
 
-        ρ0 = vecs[:, 1] * vecs[:, 1]' # start in ground state
-        ρ0_vec = reshape(ρ0, :, 1)
+        ρ0 = vecs[:, end] * vecs[:, end]'  # start in ground state
+        ρ0_vec = vec(ρ0)
 
         H_int = L / 2  # interaction Hamiltonian
         system_1 = I(length(H_0))
-        P0 = liouvillian(H_int, Ls)
+        P0 = liouvillian(H_0, Ls)
         P_int = liouvillian(H_int, [])
 
         times = [10 / Γz]
@@ -50,24 +50,28 @@ for (i, Γz) in enumerate(Γzs)
     end
 end
 
-fig = Figure()
+fig = Figure(size=(700, 500))
 ax1 = Axis(fig[1, 1],
-    ylabel = "Energy (λ)",
-    xticks = LinearTicks(8),
+    ylabel="Energy (λ)",
+    xticks=-4:4,
+    yticks=-4:2:4,
 )
-lines!(Δs / ω, spectrum[1, :], label = "Excited State")
-lines!(Δs / ω, spectrum[2, :], label = "Ground State")
+lines!(Δs / ω, spectrum[1, :], label="Excited State")
+lines!(Δs / ω, spectrum[2, :], label="Ground State")
 
 ax2 = Axis(fig[2, 1],
-    xlabel = "Detuning Δ / ω",
-    ylabel = "Absorption probability",
-    xticks = LinearTicks(8),
+    xlabel="Detuning Δ / ω",
+    ylabel="Absorption probability",
+    xticks=-4:4,
+    yticks=0:0.2:1,
 )
 for i in eachindex(Γzs)
-    lines!(Δs / ω, -absorb_av[:, i], label = "Γz = $(Γzs[i])")
+    lines!(Δs / ω, absorb_av[:, i], label="Γz = $(Γzs[i])")
 end
 
-axislegend(ax1, position = :rc)
-axislegend(ax2, position = :lt)
+ylims!(ax1, -4.01, 4.01)
+ylims!(ax2, -0.001, 1.001)
+axislegend(ax1, position=:rc)
+axislegend(ax2, position=:lt)
 
 fig

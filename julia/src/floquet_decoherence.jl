@@ -1,5 +1,5 @@
-include("src/liouvillian.jl")
-include("src/helper_functions.jl")
+include("liouvillian.jl")
+include("helper_functions.jl")
 
 # Function to obtain the Floquet propagator U(t) in terms of Floquet blocks
 # U -> U(t) = ( ..., U[2], U[1], U[0], U[-1], U[-2], ...)
@@ -39,29 +39,13 @@ function floquet_decoherence(times, ω, n_photons, P0, P_int, average=false)
         U_f = vecs * U_eigs * inv(vecs) * U0_f'
 
         if average == true
-            U_t[:, :, i] += U_f[(1:d) .+ n_max * d, :]
+            U_t[:, :, i] += U_f[(1:d).+n_max*d, :]
         else
             for j in -n_max:n_max
                 counter = j + n_max
-                U_t[:, :, i] += U_f[(1:d) .+ counter * d, :] * exp(im * j * ω * times[i])
+                U_t[:, :, i] += U_f[(1:d).+counter*d, :] * exp(im * j * ω * times[i])
             end
         end
     end
     U_t
 end
-
-
-# meas_vec = [1, 0]
-# ϵ = 0.2
-# Δ = 1.0
-# ω = 1.5
-# n_ph = 3
-# Γ = 0.1
-# L = [1 0; 0 -1]
-# Ls = [sqrt(Γ) * L]
-# H0 = Δ/2 * L + ϵ * [0 1; 1 0]
-# H_int = [1 0; 0 -1] / 2  # interaction Hamiltonian
-# P0 = liouvillian(H0, Ls)
-# P_int = liouvillian(H_int, [])
-
-# floquet_decoherence([10/Γ], ω, n_ph, P0, P_int)
