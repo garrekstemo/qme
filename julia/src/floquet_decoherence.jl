@@ -1,17 +1,20 @@
 include("liouvillian.jl")
 include("helper_functions.jl")
 
-# Function to obtain the Floquet propagator U(t) in terms of Floquet blocks
-# U -> U(t) = ( ..., U[2], U[1], U[0], U[-1], U[-2], ...)
-# for a harmonically driven system
-# arguments
-# times:    time steps
-# omega:    driving frequency
-# nphotons: number of photons driving the interaction
-# P0:       time-independent part of the Liouville superoperator
-# Pint:     superoperator of the interaction
-# average:  if average is true, average over all possible phases of driving field.
+"""
+    floquet_decoherence(times, ω, n_photons, P0, P_int, average=false)
 
+Obtain the Floquet propagator U(t) in terms of Floquet blocks for a harmonically driven system.
+U -> U(t) = ( ..., U[2], U[1], U[0], U[-1], U[-2], ...)
+
+# Arguments
+- `times`: Vector of time steps.
+- `ω`: Driving frequency.
+- `n_photons`: Number of photons driving the interaction (must be odd).
+- `P0`: Time-independent part of the Liouville superoperator.
+- `P_int`: Superoperator of the interaction.
+- `average`: If `true`, average over all possible phases of the driving field.
+"""
 function floquet_decoherence(times, ω, n_photons, P0, P_int, average=false)
     if n_photons % 2 == 0
         error("n_photons must be odd")
@@ -38,7 +41,7 @@ function floquet_decoherence(times, ω, n_photons, P0, P_int, average=false)
         U_eigs = Diagonal(exp.(-im * vals * times[i]))
         U_f = vecs * U_eigs * inv(vecs) * U0_f'
 
-        if average == true
+        if average
             U_t[:, :, i] += U_f[(1:d).+n_max*d, :]
         else
             for j in -n_max:n_max
@@ -47,5 +50,5 @@ function floquet_decoherence(times, ω, n_photons, P0, P_int, average=false)
             end
         end
     end
-    U_t
+    return U_t
 end
