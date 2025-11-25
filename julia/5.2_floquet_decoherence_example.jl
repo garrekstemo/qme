@@ -14,7 +14,7 @@ meas_vec = [1, 0]
 
 # Example values of the Hamiltonian parameters
 ϵ = 0.2             # energy
-Δs = -6:0.02:6  # detuning range
+Δs = -6:0.02:6      # detuning range
 ω = 1.5             # driving frequency
 n_ph = 13           # number of photons
 
