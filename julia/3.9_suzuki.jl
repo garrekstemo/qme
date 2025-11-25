@@ -13,7 +13,7 @@ superop_2 = liouvillian(σy, [σminus])
 d = size(ρ0, 1) # dimension of the state
 
 fig = Figure()
-ax = Axis(fig[1, 1], xlabel = "t", ylabel = "Tr[ρ(t)ρ(‘0)]")
+ax = Axis(fig[1, 1], xlabel = "t", ylabel = "Tr[ρ(t)ρ(0)]")
 
 ms = [50, 100, 1000]
 alphas = [0.4, 0.7, 1.0]
