@@ -58,7 +58,7 @@ end
 end
 
 @testset "Bloch-Redfield tensor properties" begin
-    # Create a simple test system: 2-level system (qubit)
+    # Create a simple test system: 2-level system
     N = 2
     ω0 = 1.0  # Transition frequency
     H = Diagonal([0.0, ω0])
@@ -81,7 +81,6 @@ end
     @testset "Trace preservation" begin
         # The BR tensor should preserve trace: Tr[R[ρ]] = 0
         # This means sum of each column weighted by identity should be zero
-        # For a vectorized representation, this means certain sum rules
 
         # Create identity density matrix (vectorized)
         ρ_vec = vec(Matrix{ComplexF64}(I, N, N))
@@ -93,10 +92,20 @@ end
     end
 
     @testset "Hermiticity preservation" begin
-        # R should preserve Hermiticity: if ρ is Hermitian, R[ρ] should be Hermitian
-        # This is automatically satisfied by construction, but we can check
-        # that R has the right structure
-        @test eltype(R) == ComplexF64
+        # R should preserve Hermiticity: if ρ is Hermitian, then R[ρ] should be Hermitian
+        # Create a general Hermitian density matrix
+        ρ = [0.6+0.0im 0.2-0.3im; 0.2+0.3im 0.4+0.0im]
+        ρ_vec = vec(ρ)
+
+        # Apply Bloch-Redfield tensor
+        dρ_vec = R * ρ_vec
+        dρ = reshape(dρ_vec, N, N)
+
+        # Check that dρ is Hermitian
+        @test dρ ≈ dρ' rtol=1e-10
+
+        # Also verify the original density matrix is properly normalized
+        @test tr(ρ) ≈ 1.0 rtol=1e-10
     end
 end
 
@@ -108,7 +117,7 @@ end
 
     # Use a broader NPS that doesn't decay too fast
     # This ensures non-secular terms are non-negligible
-    NPS_broad(ω) = 0.5 * exp(-abs(ω) / 0.5)  # Broader than typical thermal NPS
+    NPS_broad(ω) = 0.5 * exp(-abs(ω) / 0.5)
 
     # Off-diagonal coupling (not just site projectors) to create more transitions
     σx = [0.0 1.0 0.0 0.0; 1.0 0.0 1.0 0.0; 0.0 1.0 0.0 1.0; 0.0 0.0 1.0 0.0]
@@ -194,7 +203,7 @@ end
 end
 
 @testset "Physical constraints" begin
-    # Create a realistic test system
+    # Create test system
     N = 4
     using Random
     Random.seed!(42)
@@ -209,25 +218,12 @@ end
 
     R = BR_tensor(H, a_ops, true)
 
-    @testset "Complete positivity structure" begin
-        # The BR tensor should have a specific structure that ensures
-        # complete positivity (at least approximately for weak coupling)
-
-        # Check that R is finite everywhere
-        @test all(isfinite.(R))
-
-        # Check dimensions
-        @test size(R) == (N^2, N^2)
-    end
-
     @testset "Unitary part structure" begin
-        # The unitary part should produce coherent evolution
         # Check that imaginary part exists (coherent evolution)
         @test any(abs.(imag.(R)) .> 1e-10)
     end
 
     @testset "Dissipative part structure" begin
-        # The dissipative part should produce decay
         # Check that real part exists (dissipation)
         @test any(abs.(real.(R)) .> 1e-10)
     end

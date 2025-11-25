@@ -11,7 +11,7 @@ using PythonCall
 
 # Import Julia implementation
 include("../src/floquet_decoherence.jl")
-include("../src/liouvillian.jl") # Needed for liouvillian() helper
+include("../src/liouvillian.jl")
 
 # Import Python implementation
 sys = pyimport("sys")

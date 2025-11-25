@@ -60,13 +60,11 @@ include("../src/bloch_redfield_tensor.jl")
     R_py = py_br.BR_tensor(H_py, a_ops_py, secular=false)
     R_py_mat = pyconvert(Matrix{ComplexF64}, R_py)
 
-    # Non-secular tensor is gauge dependent (depends on eigenvector phases),
-    # so element-wise comparison may fail if phases differ.
-    # We only check that it runs and has correct dimensions.
+    # Check that code runs and has correct dimensions.
     @test size(R_jl) == size(R_py_mat)
     @test all(isfinite.(R_jl))
 
-    # Secular approximation (Gauge Invariant)
+    # Secular approximation
     R_jl_sec = BR_tensor(H_jl, a_ops_jl, true)
     R_py_sec = py_br.BR_tensor(H_py, a_ops_py, secular=true)
 
